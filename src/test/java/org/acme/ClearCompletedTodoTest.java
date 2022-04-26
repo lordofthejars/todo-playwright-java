@@ -23,8 +23,8 @@ import com.microsoft.playwright.Tracing;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 @QuarkusTest
-public class TodoPageTest {
-
+public class ClearCompletedTodoTest {
+    
     static Playwright playwright;
     static Browser browser;
 
@@ -47,7 +47,7 @@ public class TodoPageTest {
     
     @BeforeEach
     void createContextAndPage() {
-        context = browser.newContext();
+        context = browser.newContext(new Browser.NewContextOptions().setRecordVideoDir(Paths.get("videos/")));
 
         context.tracing().start(new Tracing.StartOptions()
             .setScreenshots(true)
@@ -67,21 +67,12 @@ public class TodoPageTest {
     URL url;
 
     @Test
-    public void testHomepage() {
-        
+    public void clearTodo() {
         page.navigate(url.toExternalForm());
-        page.locator("text=todos").waitFor();
-        assertThat(page.locator("h1")).hasText("todos");
-    }
 
-    //@Test
-    public void testDefaultsTodo() {
-        
-        page.navigate(url.toExternalForm());
-        assertThat(page.locator("label:has-text(\"Hibernate with Panache\")")).isVisible();
-        assertThat(page.locator("//html/body/section/section/ul/li[1]/div/label")).containsText("Introduction to Quarkus");
-        assertThat(page.locator("//html/body/section/section/ul/li[1]")).hasClass("todo completed");
-
+        page.locator("input[type=\"checkbox\"]").nth(2).check();
+        page.locator("text=Clear completed").click();
+        assertThat(page.locator(".todo")).hasCount(2);
     }
 
 }

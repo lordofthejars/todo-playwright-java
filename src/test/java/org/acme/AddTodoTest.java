@@ -23,7 +23,7 @@ import com.microsoft.playwright.Tracing;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 @QuarkusTest
-public class TodoPageTest {
+public class AddTodoTest {
 
     static Playwright playwright;
     static Browser browser;
@@ -67,21 +67,24 @@ public class TodoPageTest {
     URL url;
 
     @Test
-    public void testHomepage() {
-        
+    public void addTodo() {
         page.navigate(url.toExternalForm());
-        page.locator("text=todos").waitFor();
-        assertThat(page.locator("h1")).hasText("todos");
-    }
 
-    //@Test
-    public void testDefaultsTodo() {
+        page.onRequest(request -> System.out.println(">> " + request.method() + " " + request.url()));
+        page.onResponse(response -> System.out.println("<<" + response.status() + " " + response.url()));
+
+        page.locator("[placeholder=\"What needs to be done\\?\"]").click();
+        // Fill [placeholder="What needs to be done\?"]
+        page.locator("[placeholder=\"What needs to be done\\?\"]").fill("Attend expoQA");
+        // Press Enter
         
-        page.navigate(url.toExternalForm());
-        assertThat(page.locator("label:has-text(\"Hibernate with Panache\")")).isVisible();
-        assertThat(page.locator("//html/body/section/section/ul/li[1]/div/label")).containsText("Introduction to Quarkus");
-        assertThat(page.locator("//html/body/section/section/ul/li[1]")).hasClass("todo completed");
 
+        page.waitForResponse(r -> {
+            return r.status() == 201 && r.url().endsWith("/api/");
+        } 
+        , () -> {
+            page.locator("[placeholder=\"What needs to be done\\?\"]").press("Enter");
+        });
     }
 
 }
