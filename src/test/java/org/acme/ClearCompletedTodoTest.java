@@ -47,8 +47,6 @@ public class ClearCompletedTodoTest {
     
     @BeforeEach
     void createContextAndPage() {
-        context = browser.newContext(new Browser.NewContextOptions().setRecordVideoDir(Paths.get("videos/")));
-
         context.tracing().start(new Tracing.StartOptions()
             .setScreenshots(true)
             .setSnapshots(true));
@@ -69,10 +67,6 @@ public class ClearCompletedTodoTest {
     @Test
     public void clearTodo() {
         page.navigate(url.toExternalForm());
-
-        page.locator("input[type=\"checkbox\"]").nth(2).check();
-        page.locator("text=Clear completed").click();
-        assertThat(page.locator(".todo")).hasCount(2);
     }
 
 }

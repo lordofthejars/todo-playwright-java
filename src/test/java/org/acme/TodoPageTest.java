@@ -25,63 +25,10 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 @QuarkusTest
 public class TodoPageTest {
 
-    static Playwright playwright;
-    static Browser browser;
-
-    // New instance for each test method.
-    BrowserContext context;
-    Page page;
-
-    @BeforeAll
-    static void launchBrowser() {
-        playwright = Playwright.create();
-        browser = playwright.chromium().launch(
-            new BrowserType.LaunchOptions().setSlowMo(2000).setHeadless(false)
-            );
-    }
-
-    @AfterAll
-    static void closeBrowser() {
-        playwright.close();
-    }
-    
-    @BeforeEach
-    void createContextAndPage() {
-        context = browser.newContext();
-
-        context.tracing().start(new Tracing.StartOptions()
-            .setScreenshots(true)
-            .setSnapshots(true));
-
-        page = context.newPage();
-    }
-
-    @AfterEach
-    void closeContext(TestInfo testInfo) {
-        context.tracing().stop(new Tracing.StopOptions()
-            .setPath(Paths.get("trace" + testInfo.getDisplayName() +".zip")));
-        context.close();
-    }
 
     @TestHTTPResource("todo.html") 
     URL url;
 
-    @Test
-    public void testHomepage() {
-        
-        page.navigate(url.toExternalForm());
-        page.locator("text=todos").waitFor();
-        assertThat(page.locator("h1")).hasText("todos");
-    }
 
-    //@Test
-    public void testDefaultsTodo() {
-        
-        page.navigate(url.toExternalForm());
-        assertThat(page.locator("label:has-text(\"Hibernate with Panache\")")).isVisible();
-        assertThat(page.locator("//html/body/section/section/ul/li[1]/div/label")).containsText("Introduction to Quarkus");
-        assertThat(page.locator("//html/body/section/section/ul/li[1]")).hasClass("todo completed");
-
-    }
 
 }

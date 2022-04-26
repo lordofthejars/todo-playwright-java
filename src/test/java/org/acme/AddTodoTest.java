@@ -70,21 +70,6 @@ public class AddTodoTest {
     public void addTodo() {
         page.navigate(url.toExternalForm());
 
-        page.onRequest(request -> System.out.println(">> " + request.method() + " " + request.url()));
-        page.onResponse(response -> System.out.println("<<" + response.status() + " " + response.url()));
-
-        page.locator("[placeholder=\"What needs to be done\\?\"]").click();
-        // Fill [placeholder="What needs to be done\?"]
-        page.locator("[placeholder=\"What needs to be done\\?\"]").fill("Attend expoQA");
-        // Press Enter
-        
-
-        page.waitForResponse(r -> {
-            return r.status() == 201 && r.url().endsWith("/api/");
-        } 
-        , () -> {
-            page.locator("[placeholder=\"What needs to be done\\?\"]").press("Enter");
-        });
     }
 
 }
